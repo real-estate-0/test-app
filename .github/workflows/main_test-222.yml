@@ -26,13 +26,13 @@ jobs:
           npm install
           npm run build --if-present
       - name: Zip all files for uipload between jobs
-        run: zip react.zip ./*
+        run: zip release.zip ./build/* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: react.zip
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -47,6 +47,10 @@ jobs:
         with:
           name: node-app
 
+      #unzip artifact when deploying
+      - name: Unzip artifact for deployment
+        run: unzip release.zip  #Extract release.zip with unzip command
+
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
@@ -54,8 +58,7 @@ jobs:
           app-name: 'test-222'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B0FC677339A249E99FFBA4FF75B5C869 }}
-          package: react.zip
-          startUpCommand: 'pm2 serve /home/site/wwwroot --spa --no-daemon'
+          package: . 
 
       - name: Delete zip file
-        run: rm react.zip
+        run: rm release.zip
