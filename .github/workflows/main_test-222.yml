@@ -55,6 +55,7 @@ jobs:
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B0FC677339A249E99FFBA4FF75B5C869 }}
           package: react.zip
+          startUpCommand: 'pm2 serve /home/site/wwwroot --spa --no-daemon'
 
       - name: Delete zip file
         run: rm react.zip
